@@ -1,7 +1,7 @@
 import { initTypes } from "./helpers";
 
 class Store {
-	constructor({ name = "", services = {}, types }) {
+	constructor({ name = "", services = {}, types = {} }) {
 		this.lastUid = 0;
 		this.name = name;
 		this.services = services;
@@ -25,7 +25,6 @@ class Store {
 			),
 			typeName,
 		});
-
 		return this.types[typeName].state;
 	}
 
@@ -40,27 +39,27 @@ class Store {
 		}
 	}
 
-	subscribe(onNotify = () => {}) {
-		const token = `uid_${++this.lastUid}`;
-		this.subscribers[token] = onNotify;
-
-		onNotify(this);
-		return { onNotify, token, unsubscribe: () => this._unsubscribe(token) };
-	}
-
-	_notify() {
-		Object.values(this.subscribers).forEach((onNotify) => onNotify(this));
-	}
-
 	reset() {
 		this.lastUid = 0;
 		this.subscribers = {};
 		this.types = initTypes(this._typeConfigs);
 	}
 
+	subscribe(onNotify = () => {}) {
+		const token = `uid_${++this.lastUid}`;
+		this.subscribers[token] = onNotify;
+
+		onNotify(this, { typeName: null });
+		return { onNotify, token, unsubscribe: () => this._unsubscribe(token) };
+	}
+
+	_notify(typeName) {
+		Object.values(this.subscribers).forEach((onNotify) => onNotify(this, { typeName }));
+	}
+
 	_setState({ state, typeName }) {
 		this.types[typeName].state = state;
-		return this._notify();
+		return this._notify(typeName);
 	}
 
 	_tokenizeAction(actionString) {
