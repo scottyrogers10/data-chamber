@@ -3,7 +3,7 @@
 	"author": "Scotty Rogers",
 	"version": "0.0.3",
 	"description": "",
-	"license": "ISC",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "scottyrogers10/data-chamber"
