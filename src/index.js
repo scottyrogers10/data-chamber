@@ -40,9 +40,8 @@ class Store {
 	}
 
 	reset() {
-		this.lastUid = 0;
-		this.subscribers = {};
 		this.types = initTypes(this._typeConfigs);
+		this._notifyAllOnReset();
 	}
 
 	subscribe(onNotify = () => {}) {
@@ -55,6 +54,10 @@ class Store {
 
 	_notify(typeName) {
 		Object.values(this.subscribers).forEach((onNotify) => onNotify(this, { typeName }));
+	}
+
+	_notifyAllOnReset() {
+		Object.keys(this.types).forEach((typeName) => this._notify(typeName));
 	}
 
 	_setState({ state, typeName }) {
